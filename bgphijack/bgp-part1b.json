@@ -1,0 +1,11 @@
+{
+  "Scenario": {
+    "task1": "client ftpget",
+    "task2": "asn3 showbgp"
+  },
+  "Bindings": {
+    "ftpget": "bash -c \"{ curl -s -o /tmp/readme1.txt ftp://anonymous:x@10.1.1.2/README; echo curl-rc=$?; echo '--- README (real server) ---'; cat /tmp/readme1.txt 2>/dev/null; } > /tmp/client-ftp1.txt 2>&1\"",
+    "showbgp": "bash -c \"sudo vtysh -c 'show ip bgp' > /tmp/bgp-asn3-part1.txt 2>&1\""
+  },
+  "Constraints": {}
+}

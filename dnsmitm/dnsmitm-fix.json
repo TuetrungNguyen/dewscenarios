@@ -1,0 +1,11 @@
+{
+  "Scenario": {
+    "task1": "client fix_client",
+    "task2": "attacker fix_attacker"
+  },
+  "Bindings": {
+    "fix_client": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get install -y dnsutils > /tmp/dew-fix-client.log 2>&1\"",
+    "fix_attacker": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ettercap-text-only tshark net-tools iptables docker.io > /tmp/dew-fix-attacker.log 2>&1\""
+  },
+  "Constraints": {}
+}

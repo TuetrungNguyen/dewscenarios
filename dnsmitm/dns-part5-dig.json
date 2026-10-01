@@ -1,0 +1,1 @@
+{ "Scenario": { "task1": "auth adddig", "task2": "cache adddig" }, "Bindings": { "adddig": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get install -y dnsutils > /tmp/adddig.log 2>&1; echo rc=$? >> /tmp/adddig.log\"" }, "Constraints": {} }

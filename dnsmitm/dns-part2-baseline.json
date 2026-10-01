@@ -1,0 +1,11 @@
+{
+  "Scenario": {
+    "task1": "attacker watch startemit watching",
+    "task2": "when watching cache pingauth"
+  },
+  "Bindings": {
+    "watch": "bash -c \"sudo timeout 12 tcpdump -nn -i $expeth(auth) icmp > /tmp/attacker-icmp.txt 2>&1; true\"",
+    "pingauth": "bash -c \"sleep 2; ping -c 5 10.1.2.3 > /tmp/cache-ping-auth.txt 2>&1\""
+  },
+  "Constraints": {}
+}

@@ -1,0 +1,15 @@
+{
+  "Scenario": {
+    "task1": "server set_cookies_off emit ready",
+    "task2": "when ready client capture startemit capturing",
+    "task3": "when capturing client legit startemit legit_up",
+    "task4": "when legit_up wait 30 attacker flood"
+  },
+  "Bindings": {
+    "set_cookies_off": "bash -c \"sudo sysctl -w net.ipv4.tcp_syncookies=0 && sudo sysctl -w net.ipv4.tcp_max_syn_backlog=10000\"",
+    "capture": "bash -c \"sudo rm -f /tmp/synflood-nocookie.pcap; sudo timeout 185 tcpdump -nn -i $expeth(server) -Z root -w /tmp/synflood-nocookie.pcap ip\"",
+    "legit": "bash -c \"timeout 180 bash -c 'while true; do curl -s -o /dev/null --max-time 5 http://server; sleep 1; done'\"",
+    "flood": "bash -c \"sudo timeout 120 flooder --dst $IP(server) --src 1.1.2.0 --srcmask 255.255.255.0 --dportmin 80 --dportmax 80 --highrate 1000 --proto 6\""
+  },
+  "Constraints": {}
+}

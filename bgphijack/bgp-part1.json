@@ -1,0 +1,12 @@
+{
+  "Scenario": {
+    "task1": "asn2 delroute emit d2",
+    "task2": "asn3 delroute emit d3",
+    "task3": "when d2, d3 wait 25 client baseline"
+  },
+  "Bindings": {
+    "delroute": "bash -c \"sudo ip route del 10.1.1.0/24 2>/dev/null; echo ok\"",
+    "baseline": "bash -c \"{ echo '=== ping 10.1.1.2 ==='; ping -c2 -W2 10.1.1.2; echo '=== traceroute -n 10.1.1.2 ==='; traceroute -n -w1 -q1 10.1.1.2 2>&1 || echo NO-TRACEROUTE; } > /tmp/client-baseline.txt 2>&1\""
+  },
+  "Constraints": {}
+}

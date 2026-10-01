@@ -1,0 +1,15 @@
+{
+  "Scenario": {
+    "task1": "asn1 install_self",
+    "task2": "asn2 install_self",
+    "task3": "asn3 install_self",
+    "task4": "asn4 install_self",
+    "task5": "attacker install_self",
+    "task6": "client install_self",
+    "task7": "server install_self"
+  },
+  "Bindings": {
+    "install_self": "bash -c \"cd /tmp/$nid && sudo bash install > /tmp/dew-install-$nid.log 2>&1; echo rc=$? >> /tmp/dew-install-$nid.log\""
+  },
+  "Constraints": {}
+}

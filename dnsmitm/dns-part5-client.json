@@ -1,0 +1,1 @@
+{ "Scenario": { "task1": "client verify" }, "Bindings": { "verify": "bash -c \"dig +dnssec www.google.com A +noall +comments +answer > /tmp/client-dnssec.txt 2>&1\"" }, "Constraints": {} }

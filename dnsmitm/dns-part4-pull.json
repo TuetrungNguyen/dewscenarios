@@ -1,0 +1,5 @@
+{
+  "Scenario": { "task1": "attacker pull_bettercap" },
+  "Bindings": { "pull_bettercap": "bash -c \"sudo timeout 180 docker pull bettercap/bettercap > /tmp/bettercap-pull.txt 2>&1; echo rc=$? >> /tmp/bettercap-pull.txt\"" },
+  "Constraints": {}
+}

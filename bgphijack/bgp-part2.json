@@ -1,0 +1,13 @@
+{
+  "Scenario": {
+    "task1": "asn4 hijack emit hijacked",
+    "task2": "when hijacked wait 150 client observe",
+    "task3": "when hijacked wait 150 asn3 showbgp2"
+  },
+  "Bindings": {
+    "hijack": "bash -c \"sudo bash /tmp/hijack-prefix.sh > /tmp/hijack.log 2>&1\"",
+    "observe": "bash -c \"{ echo '=== traceroute -n 10.1.1.2 ==='; traceroute -n -w1 -q1 10.1.1.2; echo '=== README ==='; curl -s ftp://anonymous:x@10.1.1.2/README; } > /tmp/client-part2.txt 2>&1\"",
+    "showbgp2": "bash -c \"sudo vtysh -c 'show ip bgp' > /tmp/bgp-asn3-part2.txt 2>&1\""
+  },
+  "Constraints": {}
+}

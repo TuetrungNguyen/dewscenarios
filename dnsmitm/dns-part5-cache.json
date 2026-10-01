@@ -1,0 +1,1 @@
+{ "Scenario": { "task1": "cache trustanchor" }, "Bindings": { "trustanchor": "bash -c \"{ sudo sed -i 's/dnssec-validation no;/dnssec-validation yes;/' /etc/bind/named.conf.options && sudo bash -c 'cat /tmp/cache-trust.conf >> /etc/bind/named.conf.options' && sudo named-checkconf && sudo rndc reload; echo rc=$?; } > /tmp/cache-trust.log 2>&1\"" }, "Constraints": {} }

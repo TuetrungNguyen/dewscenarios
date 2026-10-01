@@ -1,0 +1,12 @@
+{
+  "Scenario": {
+    "task1": "client gather",
+    "task2": "cache gather",
+    "task3": "auth gather",
+    "task4": "attacker gather"
+  },
+  "Bindings": {
+    "gather": "bash -c \"{ echo ===$nid===; ip -br link | grep -v LOOPBACK; echo; ip -br -4 addr | grep -v ' lo '; } > /tmp/gather-$nid.txt 2>&1\""
+  },
+  "Constraints": {}
+}

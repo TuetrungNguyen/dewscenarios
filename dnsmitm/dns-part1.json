@@ -1,0 +1,5 @@
+{
+  "Scenario": { "task1": "client dig_google" },
+  "Bindings": { "dig_google": "bash -c \"dig www.google.com A > /tmp/dig-google.txt 2>&1\"" },
+  "Constraints": {}
+}

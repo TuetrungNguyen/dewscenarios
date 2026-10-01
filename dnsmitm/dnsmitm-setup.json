@@ -1,0 +1,12 @@
+{
+  "Scenario": {
+    "task1": "client install_self",
+    "task2": "cache install_self",
+    "task3": "auth install_self",
+    "task4": "attacker install_self"
+  },
+  "Bindings": {
+    "install_self": "bash -c \"cd /tmp/$nid && sudo bash install > /tmp/dew-install-$nid.log 2>&1\""
+  },
+  "Constraints": {}
+}
