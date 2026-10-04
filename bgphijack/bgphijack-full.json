@@ -1,0 +1,77 @@
+{
+  "Scenario": {
+    "asn1_prep":  "asn1 prep emit asn1_prep",
+    "asn1_pkgs":  "when asn1_prep asn1 install_pkgs emit asn1_pkgs",
+    "asn1_up":    "when asn1_pkgs asn1 config_frr_router emit asn1_up",
+    "asn2_prep":  "asn2 prep emit asn2_prep",
+    "asn2_pkgs":  "when asn2_prep asn2 install_pkgs emit asn2_pkgs",
+    "asn2_up":    "when asn2_pkgs asn2 config_frr_router emit asn2_up",
+    "asn3_prep":  "asn3 prep emit asn3_prep",
+    "asn3_pkgs":  "when asn3_prep asn3 install_pkgs emit asn3_pkgs",
+    "asn3_up":    "when asn3_pkgs asn3 config_frr_router emit asn3_up",
+    "asn4_prep":  "asn4 prep emit asn4_prep",
+    "asn4_pkgs":  "when asn4_prep asn4 install_pkgs emit asn4_pkgs",
+    "asn4_up":    "when asn4_pkgs asn4 config_frr_router emit asn4_up",
+
+    "client_prep": "client prep emit client_prep",
+    "client_pkgs": "when client_prep client install_pkgs emit client_pkgs",
+    "client_frr":  "when client_pkgs client config_frr_host emit client_frr",
+    "client_up":   "when client_frr client finalize_client emit client_up",
+
+    "server_prep": "server prep emit server_prep",
+    "server_pkgs": "when server_prep server install_pkgs emit server_pkgs",
+    "server_frr":  "when server_pkgs server config_frr_host emit server_frr",
+    "server_up":   "when server_frr server finalize_server emit server_up",
+
+    "attacker_prep": "attacker prep emit attacker_prep",
+    "attacker_pkgs": "when attacker_prep attacker install_pkgs emit attacker_pkgs",
+    "attacker_frr":  "when attacker_pkgs attacker config_frr_host emit attacker_frr",
+    "attacker_up":   "when attacker_frr attacker finalize_attacker emit attacker_up",
+
+    "p1_del2": "when asn1_up, asn2_up, asn3_up, asn4_up, client_up, server_up, attacker_up wait 30 asn2 delroute emit d2",
+    "p1_del3": "when asn1_up, asn2_up, asn3_up, asn4_up, client_up, server_up, attacker_up wait 30 asn3 delroute emit d3",
+    "p1_client":   "when d2, d3 wait 25 client baseline emit p1_client_done",
+    "p1_bgp_asn3": "when d2, d3 wait 25 asn3 showbgp",
+    "p1_bgp_asn2": "when d2, d3 wait 25 asn2 showbgp",
+
+    "p2_hijack":   "when p1_client_done asn4 do_hijack emit hijacked",
+    "p2_client":   "when hijacked wait 150 client observe emit p2_client_done",
+    "p2_bgp_asn3": "when hijacked wait 150 asn3 showbgp",
+    "p2_bgp_asn2": "when hijacked wait 150 asn2 showbgp",
+
+    "p3_subhijack": "when p2_client_done asn4 do_subhijack emit subdone",
+    "p3_client":    "when subdone wait 150 client observe",
+    "p3_bgp_asn3":  "when subdone wait 150 asn3 showbgp",
+    "p3_bgp_asn4":  "when subdone wait 150 asn4 showbgp"
+  },
+
+  "Bindings": {
+    "prep": "bash -c \"sudo cp /tmp/$nid/sources.list /etc/apt/sources.list && sudo apt-get update >/tmp/dew-$nid-prep.log 2>&1\"",
+
+    "install_pkgs": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install frr net-tools traceroute >/tmp/dew-$nid-pkgs.log 2>&1 && command -v vtysh >/dev/null && command -v traceroute >/dev/null\"",
+
+    "config_frr_router": "bash -c \"sudo cp -f /tmp/$nid/confs/$nid/frr/* /etc/frr/ && sudo service frr restart && sleep 3 && systemctl is-active --quiet frr && pgrep -x bgpd >/dev/null\"",
+
+    "config_frr_host": "bash -c \"sudo cp -f /tmp/$nid/confs/$nid/frr/* /etc/frr/ 2>/dev/null; sudo service frr restart && sleep 3 && systemctl is-active --quiet frr\"",
+
+    "finalize_client": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ftp net-tools >/tmp/dew-$nid-fin.log 2>&1 && (sudo ip route add 0.0.0.0/0 via 10.5.0.1 2>/dev/null; ip route | grep -q '^default') && command -v ftp >/dev/null\"",
+
+    "finalize_server": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install vsftpd >/tmp/dew-$nid-ftp.log 2>&1 && sudo cp -f /tmp/$nid/confs/$nid/vsftpd/vsftpd.conf /etc/ && sudo cp -f /tmp/$nid/confs/$nid/vsftpd/README /srv/ftp/ && sudo service vsftpd restart && sleep 2 && (sudo ip route add 0.0.0.0/0 via 10.1.1.1 2>/dev/null; ip route | grep -q '^default') && sudo ss -ltn | grep -q ':21 '\"",
+
+    "finalize_attacker": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install vsftpd >/tmp/dew-$nid-ftp.log 2>&1 && sudo cp -f /tmp/$nid/confs/$nid/vsftpd/vsftpd.conf /etc/ && sudo cp -f /tmp/$nid/confs/$nid/vsftpd/README /srv/ftp/ && sudo service vsftpd restart && sleep 2 && (sudo ip route add 0.0.0.0/0 via 10.6.1.1 2>/dev/null; ip route | grep -q '^default') && sudo ss -ltn | grep -q ':21 '\"",
+
+    "delroute": "bash -c \"sudo ip route del 10.1.1.0/24 2>/dev/null; echo ok\"",
+
+    "baseline": "bash -c \"{ echo '=== traceroute -n 10.1.1.2 ==='; traceroute -n -w1 -q1 10.1.1.2; echo '=== ping 10.1.1.2 ==='; ping -c2 -W2 10.1.1.2; echo '=== netstat -rn ==='; netstat -rn; echo '=== show ip route ==='; sudo vtysh -c 'show ip route'; echo '=== README ==='; curl -s ftp://anonymous:x@10.1.1.2/README; } > /tmp/client-part1.txt 2>&1\"",
+
+    "showbgp": "bash -c \"sudo vtysh -c 'show ip bgp' > /tmp/bgp-$nid-$epoch.txt 2>&1\"",
+
+    "do_hijack": "bash -c \"sudo bash /tmp/hijack-prefix.sh > /tmp/hijack.log 2>&1 && sudo vtysh -c 'show ip bgp 10.1.1.0/24' | grep -q Local\"",
+
+    "observe": "bash -c \"{ echo '=== traceroute -n 10.1.1.2 ==='; traceroute -n -w1 -q1 10.1.1.2; echo '=== netstat -rn ==='; netstat -rn; echo '=== README ==='; curl -s ftp://anonymous:x@10.1.1.2/README; } > /tmp/client-$epoch.txt 2>&1\"",
+
+    "do_subhijack": "bash -c \"sudo bash /tmp/hijack-subprefix.sh > /tmp/subhijack.log 2>&1 && sudo vtysh -c 'show ip bgp 10.1.1.0/25' | grep -q Local\""
+  },
+
+  "Constraints": {}
+}

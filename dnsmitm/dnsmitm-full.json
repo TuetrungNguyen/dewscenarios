@@ -1,0 +1,43 @@
+{
+  "Scenario": {
+    "c_prep":    "client prep emit c_prep",
+    "c_pkgs":    "when c_prep client pkgs_client emit c_pkgs",
+    "c_cfg":     "when c_pkgs client cfg_client emit c_cfg",
+    "client_up": "when c_cfg client dnsutils_client emit client_up",
+
+    "ca_prep":   "cache prep emit ca_prep",
+    "ca_pkgs":   "when ca_prep cache pkgs_bind emit ca_pkgs",
+    "cache_up":  "when ca_pkgs cache cfg_cache emit cache_up",
+
+    "au_prep":   "auth prep emit au_prep",
+    "au_pkgs":   "when au_prep auth pkgs_bind emit au_pkgs",
+    "auth_up":   "when au_pkgs auth cfg_auth emit auth_up",
+
+    "at_prep":     "attacker prep emit at_prep",
+    "attacker_up": "when at_prep attacker pkgs_attacker emit attacker_up",
+
+    "verify_dns":  "when cache_up, auth_up, client_up client dns_check"
+  },
+
+  "Bindings": {
+    "prep": "bash -c \"sudo cp /tmp/$nid/sources.list /etc/apt/sources.list && sudo apt-get update >/tmp/dew-$nid-prep.log 2>&1\"",
+
+    "pkgs_client": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install net-tools iptables >/tmp/dew-$nid-pkgs.log 2>&1 && command -v netstat >/dev/null && command -v iptables >/dev/null\"",
+
+    "cfg_client": "bash -c \"sudo sed -i '1i nameserver 10.1.2.2' /etc/resolv.conf && sudo iptables -A OUTPUT -p udp --dport 53 -d 172.30.0.1 -j DROP && sudo iptables -A OUTPUT -p tcp --dport 53 -d 172.30.0.1 -j DROP && grep -q 10.1.2.2 /etc/resolv.conf\"",
+
+    "dnsutils_client": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install dnsutils >/tmp/dew-$nid-dig.log 2>&1 && command -v dig >/dev/null\"",
+
+    "pkgs_bind": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install bind9 bind9utils bind9-doc net-tools iptables >/tmp/dew-$nid-pkgs.log 2>&1 && command -v named >/dev/null\"",
+
+    "cfg_cache": "bash -c \"sudo sed -i '1i nameserver 10.1.2.3' /etc/resolv.conf && sudo cp /tmp/$nid/named.conf.options.cache /etc/bind/named.conf.options && sudo service named reload && sleep 2 && (systemctl is-active --quiet named || systemctl is-active --quiet bind9)\"",
+
+    "cfg_auth": "bash -c \"sudo cp /tmp/$nid/named.conf.local /etc/bind/named.conf.local && sudo cp /tmp/$nid/named.conf.options.auth /etc/bind/named.conf.options && sudo mkdir -p /etc/bind/zones && sudo cp /tmp/$nid/db.google.com /etc/bind/zones/ && sudo cp /tmp/$nid/db.10 /etc/bind/zones/ && sudo service bind9 restart && sleep 2 && (systemctl is-active --quiet named || systemctl is-active --quiet bind9) && test -f /etc/bind/zones/db.google.com\"",
+
+    "pkgs_attacker": "bash -c \"sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ettercap-text-only tshark net-tools iptables docker.io >/tmp/dew-$nid-pkgs.log 2>&1 && command -v ettercap >/dev/null && command -v tshark >/dev/null && command -v docker >/dev/null\"",
+
+    "dns_check": "bash -c \"dig www.google.com A > /tmp/dnsmitm-dig.txt 2>&1 && grep -q 'status: NOERROR' /tmp/dnsmitm-dig.txt\""
+  },
+
+  "Constraints": {}
+}

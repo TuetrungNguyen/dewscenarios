@@ -24,6 +24,29 @@ Run with `./dewctl run scenario.json` (after `./deploy-dew.sh <nodes> --broker <
 
 ---
 
+## Combined scenarios (`*-full.json`) — current approach
+
+Each lab now has a single **`<lab>-full.json`** that reworks it per three pieces of feedback:
+
+1. **No `bash install`** — each node's install is decomposed into the individual actions it performs
+   (copy sources → install packages → copy configs → start/verify service), so the scenario shows the
+   real steps instead of shelling out to the lab's `install` script.
+2. **Checked emits** — every `emit` is gated on a real success criterion (service active, port
+   listening, package present, route in the table), so an event only fires if its step actually
+   worked; a failure leaves everything downstream blocked.
+3. **One scenario per lab** — setup and tasks chained together in one file.
+
+| File | Status |
+|---|---|
+| `bgphijack/bgphijack-full.json` | **verified on hardware** — 37 tasks, 0 failures |
+| `synflood/synflood-full.json` | decomposed install + the proven timed run — pending a validation run |
+| `dnsmitm/dnsmitm-full.json` | decomposed 4-node setup + a `dig` verify — pending a validation run |
+
+The per-part files below are the earlier approach, kept for reference until the combined versions are
+all hardware-validated.
+
+---
+
 ## Layout
 
 ```
