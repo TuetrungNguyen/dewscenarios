@@ -32,11 +32,11 @@
 
     "set_cookies_off": "bash -c \"sudo sysctl -w net.ipv4.tcp_syncookies=0 && sudo sysctl -w net.ipv4.tcp_max_syn_backlog=10000 && sysctl -n net.ipv4.tcp_syncookies | grep -qx 0\"",
 
-    "capture": "bash -c \"sudo rm -f /tmp/synflood-nocookie.pcap; sudo timeout 185 tcpdump -nn -i $expeth(server) -Z root -w /tmp/synflood-nocookie.pcap ip\"",
+    "capture": "bash -c \"sudo rm -f /tmp/synflood-nocookie.pcap; sudo timeout 185 tcpdump -nn -i $expeth(server) -Z root -w /tmp/synflood-nocookie.pcap ip || [ $? -eq 124 ]\"",
 
-    "legit": "bash -c \"timeout 180 bash -c 'while true; do curl -s -o /dev/null --max-time 5 http://server; sleep 1; done'\"",
+    "legit": "bash -c \"timeout 180 bash -c 'while true; do curl -s -o /dev/null --max-time 5 http://server; sleep 1; done' || [ $? -eq 124 ]\"",
 
-    "flood": "bash -c \"sudo timeout 120 flooder --dst $IP(server) --src 1.1.2.0 --srcmask 255.255.255.0 --dportmin 80 --dportmax 80 --highrate 1000 --proto 6\""
+    "flood": "bash -c \"sudo timeout 120 flooder --dst $IP(server) --src 1.1.2.0 --srcmask 255.255.255.0 --dportmin 80 --dportmax 80 --highrate 1000 --proto 6 || [ $? -eq 124 ]\""
   },
 
   "Constraints": {}

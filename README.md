@@ -40,7 +40,7 @@ Each lab now has a single **`<lab>-full.json`** that reworks it per three pieces
 |---|---|
 | `bgphijack/bgphijack-full.json` | **verified on hardware** — 37 tasks, 0 failures |
 | `dnsmitm/dnsmitm-full.json` | **verified on hardware** — 13 tasks, 0 failures (needs the control-net broker, below) |
-| `synflood/synflood-full.json` | decomposed install + the proven timed run — pending a validation run |
+| `synflood/synflood-full.json` | **verified on hardware** — decomposed install (incl. flooder built from source) + the full timed run; the bounded daemons report success on their scheduled `timeout` (`rc=124`), not failure |
 
 The per-part files below are the earlier approach, kept for reference until the combined versions are
 all hardware-validated.
