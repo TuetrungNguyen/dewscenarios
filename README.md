@@ -39,11 +39,18 @@ Each lab now has a single **`<lab>-full.json`** that reworks it per three pieces
 | File | Status |
 |---|---|
 | `bgphijack/bgphijack-full.json` | **verified on hardware** — 37 tasks, 0 failures |
+| `dnsmitm/dnsmitm-full.json` | **verified on hardware** — 13 tasks, 0 failures (needs the control-net broker, below) |
 | `synflood/synflood-full.json` | decomposed install + the proven timed run — pending a validation run |
-| `dnsmitm/dnsmitm-full.json` | decomposed 4-node setup + a `dig` verify — pending a validation run |
 
 The per-part files below are the earlier approach, kept for reference until the combined versions are
 all hardware-validated.
+
+**Broker note (dnsmitm, bgphijack):** these labs manipulate the experiment network — dnsmitm
+rewrites DNS, bgphijack leaves the experiment net unrouted until BGP is up — so DEW's broker must be
+reached over the **control net** (172.30.x), not by experiment-net name. Before deploying, add the
+broker's control IP to `/etc/hosts` on every node, e.g. for dnsmitm:
+`sudo sed -i '1i <cache-control-ip> cache' /etc/hosts`, then `./deploy-dew.sh … --broker cache`.
+synflood is a flat routed LAN and needs no such step.
 
 ---
 
